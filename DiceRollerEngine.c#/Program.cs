@@ -33,5 +33,5 @@ app.UseSwaggerUI(c =>
 
 app.MapGet("/", () => "Welcome to " + apiInfo["title"]);
 app.MapGet("/RollDice/{dice_string}", (string dice_string) => aDiceTower.RollDice(dice_string));
-app.MapGet("/SearchStringForRolls/{string_to_search}", (string dice_string) => aDiceTower.RollDice(dice_string));
+app.MapGet("/SearchStringForRolls/{string_to_search}", (string string_to_search) => aDiceTower.SearchStringForRolls(string_to_search));
 app.Run();
