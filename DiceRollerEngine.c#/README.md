@@ -4,6 +4,7 @@
 
 provide a standalone dice tool as a microservice for the complete application
 
-## initialization command
+## initialization commands
 
-dotnet new webapi -n DiceRollerEngine -o .
+dotnet new web -n DiceRollerEngine -o .
+dotnet add package Swashbuckle.AspNetCore

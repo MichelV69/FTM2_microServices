@@ -1,15 +1,23 @@
+using System.Collections;
 using DiceRollerEngine;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var API_Version = 1.0;
+Hashtable apiInfo = new();
+ apiInfo.Add("version", 1.0);
+ apiInfo.Add("title", "DiceRollerEngine");
+ apiInfo.Add("description", "Virtual Shiny Math Rock");
+
 var aDiceTower = new DiceBag();
 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-     c.SwaggerDoc($"v{API_Version}", new OpenApiInfo { Title = "DiceRollerEngine API", Description = "Virtual Shiny Math Rocks", Version = $"v{API_Version}" });
+    var v = apiInfo["version"];
+    var t = apiInfo["title"];
+    var d = apiInfo["description"];
+     c.SwaggerDoc($"v{v}", new OpenApiInfo { Title = $"{t} API", Description = $"{d}", Version = $"v{v}" });
 });
 
 var app = builder.Build();
@@ -17,10 +25,13 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-   c.SwaggerEndpoint("/swagger/v1/swagger.json", $"DiceRollerEngine API V{API_Version}");
+   var v = apiInfo["version"];
+   var t = apiInfo["title"];
+   var d = apiInfo["description"];
+   c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{t} API V{v}");
 });
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Welcome to " + apiInfo["title"]);
 app.MapGet("/RollDice/{dice_string}", (string dice_string) => aDiceTower.RollDice(dice_string));
-
+app.MapGet("/SearchStringForRolls/{string_to_search}", (string string_to_search) => aDiceTower.SearchStringForRolls(string_to_search));
 app.Run();
