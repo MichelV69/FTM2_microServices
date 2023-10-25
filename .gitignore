@@ -13,6 +13,8 @@
 */x64/*
 */[Bb]in/*
 */[Oo]bj/*
+*/obj/Debug/*
+*/bin/Debug/*
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -132,3 +134,4 @@ $RECYCLE.BIN/
 
 _NCrunch*
 ## --- eof ---
+
