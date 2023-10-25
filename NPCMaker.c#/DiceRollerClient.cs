@@ -1,62 +1,68 @@
+namespace DiceRollerClient;
+
 using System;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace DiceRollerClient
+class Connector
 {
+  private static HttpClient DiceBag = new();
+  private int Port = 8080;
+  private string URI = $"http://localhost:8080/";
+  public int diceRollTotal = -1;
+  public string returnedTextString = "error";
 
-    class Program
+
+public void SetPort(string whatToDo)
+{
+    whatToDo = whatToDo.ToLower();
+    Port = whatToDo switch
     {
-        static HttpClient client = new HttpClient();
+      "rolldice" => 9021,
+      "scantext" => 9022,
+      _ => 9020,
+    };
+    URI = $"http://localhost:{Port}/";
+}
 
-        static void ShowProduct(Product product)
-        {
-            Console.WriteLine($"Name: {product.Name}\tPrice: " +
-                $"{product.Price}\tCategory: {product.Category}");
-        }
+public void SetURI(string whatToDo, string withWhat, int colWidth = -1)
+{
+    URI += whatToDo switch
+    {
+      "rolldice" => "RollDice/" + withWhat,
+      "scantext" => "SearchStringForRolls/" + withWhat + "/" + colWidth,
+      _ => "",
+    };
+}
 
+  public Connector(string whatToDo = "", string withWhat = "", int colWidth = -1)
+  {
+    SetPort(whatToDo);
+    SetURI(whatToDo, withWhat, colWidth);
+  }
 
-        static async Task<Product> GetProductAsync(string path)
-        {
-            Product product = null;
-            HttpResponseMessage response = await client.GetAsync(path);
-            if (response.IsSuccessStatusCode)
-            {
-                product = await response.Content.ReadAsAsync<Product>();
-            }
-            return product;
-        }
+  public async Task<int> GetRollAsync()
+  {
+    var diceRollTotal = await GetJsonHttpClient(URI, DiceBag);
+    return Int32.Parse(diceRollTotal);
+  }
 
-static async Task RunAsync(string whatToDo)
-        {
-            // Update port # in the following line.
-            var port = switch (whatToDo.ToLower)
-            {
-              "rolldice":
-                9021;
-              "scantext":
-                9022;
-              default:
-                9020;
-            }
+  public async Task<string> GetTextAsync()
+  {
+    var updatedText = await GetJsonHttpClient(URI, DiceBag);
+    return updatedText;
+  }
 
+  private static async Task<string> GetJsonHttpClient(string uri, HttpClient httpClient)
+  {
+    var queryPayload = new HttpRequestMessage(HttpMethod.Get, uri);
+    queryPayload.Headers.Add("User-Agent", "C# program by michel@wolfstar.ca");
+    var connection = await httpClient.SendAsync(queryPayload);
 
-            client.BaseAddress = new Uri($"http://localhost:{port}/");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+    var content = await connection.Content.ReadAsStringAsync();
+    content ??= "-902";
 
-            try
-            {
-              // do the things via switch here
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-    }
-
+    Console.WriteLine(">> DEBUG: " + content);
+    return content;
+  }
 }

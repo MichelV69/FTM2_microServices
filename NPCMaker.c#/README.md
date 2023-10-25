@@ -13,5 +13,7 @@ dotnet new web -n NPCMaker -o .
 
 dotnet add package Swashbuckle.AspNetCore
 
+dotnet add package System.Net.Http.Json
+
 docker init
 ``
